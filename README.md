@@ -30,7 +30,7 @@ Make sure to input the neccessary texture names in the fx
 
 ❌ **Commercial use is not allowed**, please use other shaders that allow this.
 
-❌ **Redistributing the shader (putting the intact shader as the main focus of the DL) is not allowed**, you can link this page or my dA post of the shader for the viewers to download it directly.
+❌ **Redistributing the shader (putting the intact shader as the main focus of the DL) is not allowed**, you can link this page for the viewers to download it directly.
 
 ✔️ **However, it's fine for you to put your modification of the shader for DL.**
 
