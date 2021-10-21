@@ -23,6 +23,12 @@ Apply Object.fx to the materials. (clone the fx file if you want to use the shad
 
 Make sure to input the neccessary texture names in the fx
 
+## Notices
+- Make sure that your Project Sekai model has vertex color that looks like this in the UV2 slot.
+- Normally, the rim light will be visible from the start. But once you load **Shadekai_Controller.pmx**, it will disappear due to the color is reset to 0. You have to turn the color sliders up for it to appear again.
+- The texture that ends with "_H" is necessary for the shader to color the skin. However, it is extremely low-res and can cause some disconnections between parts. You should upscale it using Waifu2x
+
+
 ## Rules
 ✔️ **Modification is allowed, you can customize the shader, or add new features to it all you want.**
 
