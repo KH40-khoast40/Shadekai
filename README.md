@@ -25,8 +25,9 @@ Make sure to input the neccessary texture names in the fx
 
 ## Notices
 - Make sure that your Project Sekai model has vertex color that looks like this in the UV2 slot.
+- Turn off the model's edge line in PMXE, the shader will create it itself. They will clash if they exist simultaneously.
 - Normally, the rim light will be visible from the start. But once you load **Shadekai_Controller.pmx**, it will disappear due to the color is reset to 0. You have to turn the color sliders up for it to appear again.
-- The texture that ends with "_H" is necessary for the shader to color the skin. However, it is extremely low-res and can cause some disconnections between parts. You should upscale it using Waifu2x
+- The texture that ends with "_H" is necessary for the shader to color the skin. However, it is extremely low-res and can cause some disconnections between parts. You should upscale it using Waifu2x.
 
 
 ## Rules
