@@ -1,0 +1,43 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool Controller : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; >;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+float EdgeScale_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "VC: Edge Scale"; >;
+float RimScale_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "VC: Rim Scale"; >;
+float SkinArea_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Map: Skin Area"; >;
+float GlowArea_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Map: Glow Area"; >;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+float Rim_Intensity_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Intensity +"; >;
+float Rim_Intensity_M : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Intensity -"; >;
+static float Rim_Intensity_F = Rim_Intensity + Rim_Intensity_P*Rim_Intensity - Rim_Intensity_M*Rim_Intensity;
+
+float Rim_Length_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Length +"; >;
+float Rim_Length_M : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Length -"; >;
+static float Rim_Length_F = Rim_Length - Rim_Length_P*Rim_Length + Rim_Length_M*Rim_Length;
+
+float Rim_Thickness_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Thickness +"; >;
+float Rim_Thickness_M : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Thickness -"; >;
+static float Rim_Thickness_F = Rim_Thickness - Rim_Thickness_P*Rim_Thickness + Rim_Thickness_M*Rim_Thickness;
+
+float Rim_Color_R_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Color_R +"; >;
+static float Rim_Color_R_F = Rim_Color_R_P; 
+
+float Rim_Color_G_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Color_G +"; >;
+static float Rim_Color_G_F = Rim_Color_G_P; 
+
+float Rim_Color_B_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Color_B +"; >;
+static float Rim_Color_B_F = Rim_Color_B_P;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+float Edge_Thickness_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Edge_Thickness +"; >;
+float Edge_Thickness_M : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Edge_Thickness -"; >;
+static float Edge_Thickness_F = Edge_Thickness + Edge_Thickness_P*Edge_Thickness - Edge_Thickness_M*Edge_Thickness;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "Shadekai_Database.fxsub"

@@ -1,0 +1,51 @@
+float3 Skin_Color[21] =
+{
+float3(255, 245, 232),	//Ichika//
+float3(255, 245, 232),	//Saki//
+float3(255, 245, 232),	//Honami//
+float3(255, 245, 232),	//Shiho//
+float3(254, 239, 224),	//Minori//
+float3(255, 245, 232),	//Haruka//
+float3(254, 239, 224),	//Airi//
+float3(255, 245, 232),	//Shizuku//
+float3(255, 245, 232),	//Kohane//
+float3(254, 239, 224),	//An//
+float3(254, 239, 224),	//Akito//
+float3(255, 245, 232),	//Touya//
+float3(254, 239, 224),	//Tsukasa//
+float3(255, 245, 232),	//Emu//
+float3(255, 245, 232),	//Nene//
+float3(255, 245, 232),	//Rui//
+float3(255, 245, 232),	//Kanade//
+float3(254, 239, 224),	//Mafuyu//
+float3(255, 245, 232),	//Ena//
+float3(255, 245, 232),	//Mizuki//
+float3(253, 245, 235),	//Vocaloids//
+};
+
+float3 SkinShade_Color[21] =
+{
+float3(244, 182, 205),	//Ichika//
+float3(244, 182, 205),	//Saki//
+float3(244, 182, 205),	//Honami//
+float3(244, 182, 205),	//Shiho//
+float3(239, 175, 187),	//Minori//
+float3(244, 182, 205),	//Haruka//
+float3(239, 175, 187),	//Airi//
+float3(244, 182, 205),	//Shizuku//
+float3(244, 182, 205),	//Kohane//
+float3(239, 175, 187),	//An//
+float3(236, 169, 170),	//Akito//
+float3(244, 182, 188),	//Touya//
+float3(236, 169, 170),	//Tsukasa//
+float3(244, 182, 205),	//Emu//
+float3(244, 182, 205),	//Nene//
+float3(244, 182, 188),	//Rui//
+float3(244, 182, 205),	//Kanade//
+float3(239, 175, 187),	//Mafuyu//
+float3(244, 182, 205),	//Ena//
+float3(244, 182, 205),	//Mizuki//
+float3(227, 196, 203),	//Vocaloids//
+};
+
+#include "Shadekai.fxsub"

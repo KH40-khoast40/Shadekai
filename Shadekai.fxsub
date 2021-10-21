@@ -1,0 +1,242 @@
+////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//	Shadekai (Project Sekai shader for MMD)
+//
+//	By: KH40 (khoast40)
+//	Base shader: 舞力介入P
+//	Special thanks: Yukikami
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+// パラメータ宣言
+
+// 座法変換行列
+float4x4 WorldViewProjMatrix      : WORLDVIEWPROJECTION;
+float4x4 WorldMatrix              : WORLD;
+float4x4 LightWorldViewProjMatrix : WORLDVIEWPROJECTION < string Object = "Light"; >;
+
+float3   LightDirection    : DIRECTION < string Object = "Light"; >;
+float3   CameraPosition    : POSITION  < string Object = "Camera"; >;
+
+// マテリアル色
+float4   MaterialDiffuse   : DIFFUSE  < string Object = "Geometry"; >;
+float3   MaterialAmbient   : AMBIENT  < string Object = "Geometry"; >;
+float3   MaterialEmmisive  : EMISSIVE < string Object = "Geometry"; >;
+float3   MaterialSpecular  : SPECULAR < string Object = "Geometry"; >;
+float    SpecularPower     : SPECULARPOWER < string Object = "Geometry"; >;
+float3   MaterialToon      : TOONCOLOR;
+// ライト色
+float3   LightDiffuse      : DIFFUSE   < string Object = "Light"; >;
+float3   LightAmbient      : AMBIENT   < string Object = "Light"; >;
+float3   LightSpecular     : SPECULAR  < string Object = "Light"; >;
+static float4 DiffuseColor  = MaterialDiffuse  * float4(LightDiffuse, 1.0f);
+static float3 AmbientColor  = MaterialAmbient  * LightAmbient + MaterialEmmisive;
+static float3 SpecularColor = MaterialSpecular * LightSpecular;
+
+bool use_texture;  //テクスチャの有無
+
+bool     parthf;   // パースペクティブフラグ
+bool     transp;   // 半透明フラグ
+
+// オブジェクトのテクスチャ
+texture ObjectTexture: MATERIALTEXTURE;
+sampler ObjTexSampler = sampler_state
+{
+    texture = <ObjectTexture>;
+    MINFILTER = ANISOTROPIC;
+	MAGFILTER = ANISOTROPIC;
+	MIPFILTER = ANISOTROPIC;
+	ADDRESSU  = WRAP;
+	ADDRESSV  = WRAP;
+	MAXANISOTROPY = 16;
+};
+
+texture2D SekaiMap <
+	string ResourceName = SekaiMap_Texture;
+	int MipLevels = 0;
+>;
+sampler2D SekaiMapSamp = sampler_state {
+	texture = <SekaiMap>;
+	MINFILTER = ANISOTROPIC;
+	MAGFILTER = ANISOTROPIC;
+	MIPFILTER = ANISOTROPIC;
+	ADDRESSU  = WRAP;
+	ADDRESSV  = WRAP;
+	MAXANISOTROPY = 16;
+};
+
+texture2D ShadowColorMap <
+	string ResourceName = ShadowColorMap_Texture;
+	int MipLevels = 0;
+>;
+sampler2D ShadowColorMapSamp = sampler_state {
+	texture = <ShadowColorMap>;
+	MINFILTER = ANISOTROPIC;
+	MAGFILTER = ANISOTROPIC;
+	MIPFILTER = ANISOTROPIC;
+	ADDRESSU  = WRAP;
+	ADDRESSV  = WRAP;
+	MAXANISOTROPY = 16;
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// シャドウバッファのサンプラ。"register(s0)"なのはMMDがs0を使っているから
+sampler DefSampler : register(s0);
+
+struct BufferShadow_OUTPUT
+{
+    float4 Pos      : POSITION;     // 射影変換座標
+    float2 Tex      : TEXCOORD1;    // テクスチャ
+    float3 Normal   : TEXCOORD2;    // 法線
+    float3 Eye      : TEXCOORD3;    // カメラとの相対位置
+	float4 VColor   : TEXCOORD4;
+    float4 Color    : COLOR0;       // ディフューズ色
+};
+
+// 頂点シェーダ
+BufferShadow_OUTPUT Basic_VS(float4 Pos : POSITION, float3 Normal : NORMAL, float2 Tex : TEXCOORD0, float4 VColor : TEXCOORD2)
+{
+    BufferShadow_OUTPUT Out = (BufferShadow_OUTPUT)0;
+
+    // カメラ視点のワールドビュー射影変換
+    Out.Pos = mul( Pos, WorldViewProjMatrix );
+    
+    // カメラとの相対位置
+    Out.Eye = CameraPosition - mul( Pos, WorldMatrix );
+    // 頂点法線
+    Out.Normal = normalize( mul( Normal, (float3x3)WorldMatrix ) );
+    
+    // ディフューズ色＋アンビエント色 計算
+    Out.Color.rgb = saturate( max(0,dot( Out.Normal, -LightDirection )) * DiffuseColor.rgb + AmbientColor );
+    Out.Color.a = DiffuseColor.a;
+    
+    // テクスチャ座標
+    Out.Tex = Tex;
+	
+	Out.VColor = VColor;
+    
+    return Out;
+}
+
+// ピクセルシェーダ
+float4 Basic_PS( BufferShadow_OUTPUT IN ) : COLOR
+{ 	
+	float3 Shadow_Color = float3(0,0,0);
+	float3 Rim_Color = float3(0,0,0);
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+		if (Controller)
+		{
+			Rim_Intensity = Rim_Intensity_F;
+			Rim_Length = Rim_Length_F;
+			Rim_Thickness = Rim_Thickness_F;
+			
+			Rim_Color = float3(Rim_Color_R_F,Rim_Color_G_F,Rim_Color_B_F);
+		}
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+	
+    float4 GlobalLight = IN.Color;
+    float4 TexColor = tex2D( ObjTexSampler, IN.Tex );
+	float4 ShadowTexColor = tex2D( ShadowColorMapSamp, IN.Tex );
+	
+	float4 Color;
+	
+	float comp = ((saturate(dot(IN.Normal,-LightDirection))));
+	comp = smoothstep(0,0.01,comp);
+	Color = lerp(ShadowTexColor, TexColor, comp);
+	
+	float3 ColorSkin = Color.rgb * Skin_Color[Character]/255;
+	ColorSkin = max(ColorSkin, SkinShade_Color[Character]/255);
+	Color.rgb = lerp(Color.rgb,ColorSkin,tex2D(SekaiMapSamp,IN.Tex).r);
+	
+	float rim_direction = pow(saturate(dot(IN.Normal,-LightDirection)),Rim_Length);
+	
+	float rim = 1.0 - saturate(dot(normalize(IN.Eye), IN.Normal));
+	rim = rim * rim_direction;
+	rim = smoothstep(Rim_Thickness-0.01,Rim_Thickness+0.01,rim);
+	
+		if (Controller)
+		{
+			Color.rgb += rim * Rim_Color * Rim_Intensity * IN.VColor.g;
+		}
+		else
+		{
+			Color.rgb += rim * Rim_Intensity * IN.VColor.g;
+		}
+	
+	Color.rgb *= GlobalLight;
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+		if (Controller)
+		{
+			Color.rgb = lerp(Color.rgb , float3(IN.VColor.rrr) , EdgeScale_view );
+			Color.rgb = lerp(Color.rgb , float3(IN.VColor.ggg) , RimScale_view );
+			Color.rgb = lerp(Color.rgb , tex2D(SekaiMapSamp,IN.Tex).rrr , SkinArea_view );
+			Color.rgb = lerp(Color.rgb , tex2D(SekaiMapSamp,IN.Tex).ggg , GlowArea_view );
+		}
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+		
+	return Color;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct EdgeVS_OUTPUT {
+    float4 Pos      : POSITION;     // 射影変換座標
+    float2 Tex      : TEXCOORD1;    // テクスチャ
+	float3 Normal   : TEXCOORD2;
+};
+
+EdgeVS_OUTPUT Edge_VS(float4 Pos : POSITION, float3 Normal : NORMAL, float2 Tex : TEXCOORD0, float4 VColor : TEXCOORD2) 
+{
+	EdgeVS_OUTPUT Out = (EdgeVS_OUTPUT)0;
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+		if (Controller)
+		{
+			Edge_Thickness = Edge_Thickness_F;
+		}
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+	
+    // カメラ視点のワールドビュー射影変換
+	Out.Tex = Tex;
+	Out.Normal = normalize( mul( Normal, (float3x3)WorldMatrix ) );
+	
+	Pos.xyz += Normal * Edge_Thickness * VColor.r;
+	Out.Pos = mul( Pos, WorldViewProjMatrix );
+	
+	return Out;
+}
+
+float4 Edge_PS(EdgeVS_OUTPUT IN) : COLOR
+{
+	float3 EdgeColor = tex2D(ObjTexSampler,IN.Tex).rgb*0.325;
+	float EdgeAlpha = tex2D(ObjTexSampler,IN.Tex).a;
+    return float4(EdgeColor,EdgeAlpha);
+}
+technique MainTec < string MMDPass = "object"; > {
+    pass DrawObject
+    {
+        VertexShader = compile vs_3_0 Basic_VS();
+        PixelShader  = compile ps_3_0 Basic_PS();
+    }
+	pass DrawEdge {
+	   CullMode = CW;
+       VertexShader = compile vs_3_0 Edge_VS();
+       PixelShader  = compile ps_3_0 Edge_PS();
+    }
+}
+
+// オブジェクト描画用テクニック
+technique MainTecBS  < string MMDPass = "object_ss"; > {
+    pass DrawObject {
+        VertexShader = compile vs_3_0 Basic_VS();
+        PixelShader  = compile ps_3_0 Basic_PS();
+    }
+	pass DrawEdge {
+	   CullMode = CW;
+       VertexShader = compile vs_3_0 Edge_VS();
+       PixelShader  = compile ps_3_0 Edge_PS();
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
