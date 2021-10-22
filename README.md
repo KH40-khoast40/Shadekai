@@ -13,22 +13,32 @@ A MMD shader that is utilized in making ripped Project Sekai models look as iden
 <img src="https://i.imgur.com/sUN4Uic.png" alt="alt text">
 
 ## Features
-- Skin tone variation based on characters <img src="https://i.imgur.com/HBNPKVL.png" alt="alt text"> <img src="https://i.imgur.com/B0uFSb0.png" alt="alt text">
+- Skin tone variation based on characters 
+<img src="https://i.imgur.com/HBNPKVL.png" alt="alt text" width="455" height="256"> 
+<img src="https://i.imgur.com/B0uFSb0.png" alt="alt text" width="455" height="256">
+
 - Accurate shadow color (no self-made toons involved)
+<img src="https://i.imgur.com/vQr0lcs.png" alt="alt text" width="410" height="512">
+
 - Directional rim lighting
+<img src="https://i.imgur.com/QHc3wUR.png" alt="alt text" width="512" height="274">
+
 - Edge line & Rim thickness variation based on vertex color
-- Automatically colored edge line based on texture
+<img src="https://i.imgur.com/WZa9ig2.png" alt="alt text" width="512" height="256">
 
 ## Usage
-Apply Object.fx to the materials. (clone the fx file if you want to use the shader on 2 or more materials with different settings)
+Apply Object.fx to the materials. (clone the fx file if you want to use the shader on 2 or more materials with different settings).
 
-Make sure to input the neccessary texture names in the fx
+Make sure to input the neccessary texture names in the fx.
 
 ## Notices
 - Make sure that your Project Sekai model has vertex color that looks like this in the UV2 slot.
+<img src="https://i.imgur.com/Qz7akZ0.png" alt="alt text" width="400" height="731">
+
 - Turn off the model's edge line in PMXE, the shader will create it itself. They will clash if they exist simultaneously.
 - Normally, the rim light will be visible from the start. But once you load **Shadekai_Controller.pmx**, it will disappear due to the color is reset to 0. You have to turn the color sliders up for it to appear again.
 - The texture that ends with "_H" is necessary for the shader to color the skin. However, it is extremely low-res and can cause some disconnections between parts. You should upscale it using Waifu2x.
+- The shader can't make parts glow based on map, because that job is for a post-processing effect.
 
 
 ## Rules
