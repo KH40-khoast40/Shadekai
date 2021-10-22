@@ -10,6 +10,7 @@
 
 # Shadekai
 A MMD shader that is utilized in making ripped Project Sekai models look as identical as how they are in-game as possible.
+<img src="https://i.imgur.com/sUN4Uic.png" alt="alt text">
 
 ## Features
 - Skin tone variation based on characters
