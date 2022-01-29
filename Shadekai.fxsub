@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//	Shadekai (Project Sekai shader for MMD)
+//	Shadekai (Project Sekai shader for MMD) v1.1
 //
 //	By: KH40 (khoast40)
 //	Base shader: 舞力介入P
@@ -8,6 +8,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // パラメータ宣言
+
+#include "HgShadow_ObjHeader.fxh"
 
 // 座法変換行列
 float4x4 WorldViewProjMatrix      : WORLDVIEWPROJECTION;
@@ -90,6 +92,7 @@ struct BufferShadow_OUTPUT
     float3 Normal   : TEXCOORD2;    // 法線
     float3 Eye      : TEXCOORD3;    // カメラとの相対位置
 	float4 VColor   : TEXCOORD4;
+	float4 PPos     : TEXCOORD5;    // 射影座標
     float4 Color    : COLOR0;       // ディフューズ色
 };
 
@@ -100,6 +103,8 @@ BufferShadow_OUTPUT Basic_VS(float4 Pos : POSITION, float3 Normal : NORMAL, floa
 
     // カメラ視点のワールドビュー射影変換
     Out.Pos = mul( Pos, WorldViewProjMatrix );
+	
+	Out.PPos = Out.Pos;
     
     // カメラとの相対位置
     Out.Eye = CameraPosition - mul( Pos, WorldMatrix );
@@ -142,6 +147,22 @@ float4 Basic_PS( BufferShadow_OUTPUT IN ) : COLOR
 	
 	float comp = ((saturate(dot(IN.Normal,-LightDirection))));
 	comp = smoothstep(0,0.01,comp);
+	
+	#if Shadow == 1
+		
+			if(HgShadow_Valid)
+			{
+				float compshadow = HgShadow_GetSelfShadowRate(IN.PPos);
+				
+				#if Shadow_Sharp == 1
+				compshadow = step(0.25,compshadow);
+				#endif
+				
+				comp = min(comp,compshadow);
+			}
+			
+	#endif
+	
 	Color = lerp(ShadowTexColor, TexColor, comp);
 	
 	float3 ColorSkin = Color.rgb * Skin_Color[Character]/255;
