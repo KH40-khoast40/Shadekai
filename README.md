@@ -14,7 +14,7 @@ A MMD shader that is utilized in making ripped Project Sekai models look as iden
 
 ## Features
 - ***(New in v1.1)*** Real-time shadow (HgShadow) (Soft/Sharp)
-<img src="https://i.imgur.com/c6hnn07.png" alt="alt text" width="272" height="256"> 
+<img src="https://i.imgur.com/c6hnn07.png" alt="alt text" width="431" height="256"> 
 
 - Skin tone variation based on characters 
 <img src="https://i.imgur.com/HBNPKVL.png" alt="alt text" width="455" height="256"> 
