@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//	Shadekai (Project Sekai shader for MMD) v1.1
+//	Shadekai (Project Sekai shader for MMD) v1.2
 //
 //	By: KH40 (khoast40)
 //	Base shader: 舞力介入P
@@ -80,6 +80,33 @@ sampler2D ShadowColorMapSamp = sampler_state {
 	MAXANISOTROPY = 16;
 };
 
+#if Self_LightDirection == 1
+
+	float4x4 Self_Lighting_Matrix_Toon : CONTROLOBJECT < string name = Self_Lighting_Model ; string item = Self_Lighting_Bone_Toon ; >;
+	static float3 Self_Lighting_Dir_Toon = normalize(Self_Lighting_Matrix_Toon._31_32_33);
+	
+	float4x4 Self_Lighting_Matrix_Rim : CONTROLOBJECT < string name = Self_Lighting_Model ; string item = Self_Lighting_Bone_Rim ; >;
+	static float3 Self_Lighting_Dir_Rim = normalize(Self_Lighting_Matrix_Rim._31_32_33);
+	
+#endif
+
+float Color_Burn(float base, float blend)
+{
+    if (base >= 1.0)
+        return 1.0;
+    else if (blend <= 0.0)
+        return 0.0;
+    else    
+    	return 1.0 - min(1.0, (1.0-base) / blend);
+}
+
+float3 Color_Burn(float3 base, float3 blend)
+{
+	return float3(  Color_Burn(base.r, blend.r), 
+					Color_Burn(base.g, blend.g), 
+					Color_Burn(base.b, blend.b) );
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // シャドウバッファのサンプラ。"register(s0)"なのはMMDがs0を使っているから
@@ -112,6 +139,9 @@ BufferShadow_OUTPUT Basic_VS(float4 Pos : POSITION, float3 Normal : NORMAL, floa
     Out.Normal = normalize( mul( Normal, (float3x3)WorldMatrix ) );
     
     // ディフューズ色＋アンビエント色 計算
+	#if Self_LightDirection == 1
+		LightDirection = Self_Lighting_Dir_Toon;
+	#endif
     Out.Color.rgb = saturate( max(0,dot( Out.Normal, -LightDirection )) * DiffuseColor.rgb + AmbientColor );
     Out.Color.a = DiffuseColor.a;
     
@@ -126,8 +156,15 @@ BufferShadow_OUTPUT Basic_VS(float4 Pos : POSITION, float3 Normal : NORMAL, floa
 // ピクセルシェーダ
 float4 Basic_PS( BufferShadow_OUTPUT IN ) : COLOR
 { 	
+	#if Self_LightDirection == 1
+		LightDirection = Self_Lighting_Dir_Toon;
+	#endif
+	
 	float3 Shadow_Color = float3(0,0,0);
 	float3 Rim_Color = float3(0,0,0);
+	float3 Ambient_Color = float3(1,1,1);
+	float Ambient_Sensitivity = 0.75;
+	float Ambient_Dark = 0;
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 		if (Controller)
 		{
@@ -136,6 +173,14 @@ float4 Basic_PS( BufferShadow_OUTPUT IN ) : COLOR
 			Rim_Thickness = Rim_Thickness_F;
 			
 			Rim_Color = float3(Rim_Color_R_F,Rim_Color_G_F,Rim_Color_B_F);
+			
+			Ambient_Color.r += (Ambient_Color_R_F) + (-Ambient_Color_G_F) + (-Ambient_Color_B_F);
+			Ambient_Color.g += (-Ambient_Color_R_F) + (Ambient_Color_G_F) + (-Ambient_Color_B_F);
+			Ambient_Color.b += (-Ambient_Color_R_F) + (-Ambient_Color_G_F) + (Ambient_Color_B_F);
+			
+			Ambient_Color.rgb = lerp(1,saturate(Ambient_Color.rgb),Ambient_Sensitivity);
+			
+			Ambient_Dark = Ambient_Dark_F;
 		}
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -169,7 +214,18 @@ float4 Basic_PS( BufferShadow_OUTPUT IN ) : COLOR
 	ColorSkin = max(ColorSkin, SkinShade_Color[Character]/255);
 	Color.rgb = lerp(Color.rgb,ColorSkin,tex2D(SekaiMapSamp,IN.Tex).r);
 	
-	float rim_direction = pow(saturate(dot(IN.Normal,-LightDirection)),Rim_Length);
+	Color.rgb *= GlobalLight;
+	
+	Color.rgb = Color_Burn(Color.rgb,Ambient_Color);
+	Color.rgb *= (1-Ambient_Dark);
+	
+	float rim_direction;
+	
+	#if Self_LightDirection == 1
+		rim_direction = pow(saturate(dot(IN.Normal,-Self_Lighting_Dir_Rim)),Rim_Length);
+	#else
+		rim_direction = pow(saturate(dot(IN.Normal,-LightDirection)),Rim_Length);
+	#endif
 	
 	float rim = 1.0 - saturate(dot(normalize(IN.Eye), IN.Normal));
 	rim = rim * rim_direction;
@@ -184,8 +240,6 @@ float4 Basic_PS( BufferShadow_OUTPUT IN ) : COLOR
 			Color.rgb += rim * Rim_Intensity * IN.VColor.g;
 		}
 	
-	Color.rgb *= GlobalLight;
-	
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 		if (Controller)
 		{
@@ -193,9 +247,10 @@ float4 Basic_PS( BufferShadow_OUTPUT IN ) : COLOR
 			Color.rgb = lerp(Color.rgb , float3(IN.VColor.ggg) , RimScale_view );
 			Color.rgb = lerp(Color.rgb , tex2D(SekaiMapSamp,IN.Tex).rrr , SkinArea_view );
 			Color.rgb = lerp(Color.rgb , tex2D(SekaiMapSamp,IN.Tex).ggg , GlowArea_view );
+			Color.rgb = lerp(Color.rgb , Ambient_Color*(1-Ambient_Dark) , Ambient_view );
 		}
 	/////////////////////////////////////////////////////////////////////////////////////////////////
-		
+	
 	return Color;
 }
 

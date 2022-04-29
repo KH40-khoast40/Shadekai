@@ -8,6 +8,7 @@ float EdgeScale_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; 
 float RimScale_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "VC: Rim Scale"; >;
 float SkinArea_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Map: Skin Area"; >;
 float GlowArea_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Map: Glow Area"; >;
+float Ambient_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Ambient"; >;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -23,14 +24,36 @@ float Rim_Thickness_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx";
 float Rim_Thickness_M : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Thickness -"; >;
 static float Rim_Thickness_F = Rim_Thickness - Rim_Thickness_P*Rim_Thickness + Rim_Thickness_M*Rim_Thickness;
 
-float Rim_Color_R_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Color_R +"; >;
+#if Self_Rim == 0
+	float Rim_Color_R_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_R +"; >;
+	float Rim_Color_G_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_G +"; >;
+	float Rim_Color_B_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_B +"; >;
+#else
+	float Rim_Color_R_P : CONTROLOBJECT < string name = Self_Lighting_Model; string item = "Rim_R +"; >;
+	float Rim_Color_G_P : CONTROLOBJECT < string name = Self_Lighting_Model; string item = "Rim_G +"; >;
+	float Rim_Color_B_P : CONTROLOBJECT < string name = Self_Lighting_Model; string item = "Rim_B +"; >;
+#endif
+
 static float Rim_Color_R_F = Rim_Color_R_P; 
-
-float Rim_Color_G_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Color_G +"; >;
 static float Rim_Color_G_F = Rim_Color_G_P; 
-
-float Rim_Color_B_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Rim_Color_B +"; >;
 static float Rim_Color_B_F = Rim_Color_B_P;
+
+#if Self_Ambient == 0
+	float Ambient_Color_R_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Ambient_R +"; >;
+	float Ambient_Color_G_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Ambient_G +"; >;
+	float Ambient_Color_B_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Ambient_B +"; >;
+	float Ambient_Dark_P : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Ambient_Dark +"; >;
+#else
+	float Ambient_Color_R_P : CONTROLOBJECT < string name = Self_Lighting_Model; string item = "Ambient_R +"; >;
+	float Ambient_Color_G_P : CONTROLOBJECT < string name = Self_Lighting_Model; string item = "Ambient_G +"; >;
+	float Ambient_Color_B_P : CONTROLOBJECT < string name = Self_Lighting_Model; string item = "Ambient_B +"; >;
+	float Ambient_Dark_P : CONTROLOBJECT < string name = Self_Lighting_Model; string item = "Ambient_Dark +"; >;
+#endif
+
+static float Ambient_Color_R_F = Ambient_Color_R_P; 
+static float Ambient_Color_G_F = Ambient_Color_G_P; 
+static float Ambient_Color_B_F = Ambient_Color_B_P;
+static float Ambient_Dark_F = Ambient_Dark_P;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

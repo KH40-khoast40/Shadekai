@@ -11,6 +11,26 @@
 //	2.Honami	6.Airi		10.Akito	14.Nene		18.Ena
 //	3.Shiho		7.Shizuku	11.Touya	15.Rui		19.Mizuki
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define Self_LightDirection 1 //Light direction per character, set to 0 for the model to use global light instead
+
+#define Self_Ambient 1 //The ambient color on the model. If enable, the Self_Lighting_Model must have "Ambient_R/G/B +" facials
+#define Self_Rim 1 //The color of the rim to be exact. If enable, the Self_Lighting_Model must have "Rim_R/G/B +" facials
+
+//Note that if Self_Ambient and Self_Rim are turned off, those of the model will be globally controlled by the RGB facials in Shadekai_Controller.pmx
+//Turn off the 3 things above if you just want to control all aspects of the lighting globally like the previous version of the shader
+
+//The options below are to define the controller of LightDirection, Ambient, Rim
+
+	#define Self_Lighting_Model "Shadekai_Light.pmx" 
+		//Choose the model that contains the bone used to control the lighting
+		//Type "(self)" if you want to use the character model itself as the controller
+	
+	#define Self_Lighting_Bone_Toon "Toon_Direction" //Choose the bone used to control the toon
+	#define Self_Lighting_Bone_Rim "Rim_Direction" //Choose the bone used to control the rim
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define Shadow 1
 	//0 to disable, 1 to enable
@@ -21,6 +41,8 @@
 #define Shadow_Sharp 1
 	//0 to choose soft shadow , 1 to choose sharp shadow
 	//For Sekai's artstyle, sharp shadow is recommended. And no, sharp not as in default MMD's busted pixelated shadow, it's Hgshadow but sharpened
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 float Rim_Intensity = 0.35;
 float Rim_Length = 0.25; //SMALLER number means LONGER rim
