@@ -11,8 +11,12 @@
 # Shadekai
 A MMD shader that is utilized in making ripped Project Sekai models look as identical as how they are in-game as possible.
 <img src="https://i.imgur.com/sUN4Uic.png" alt="alt text">
+<img src="https://i.imgur.com/RuHMgS5.png" alt="alt text">
 
 ## Features
+- ***(New in v1.2)*** Lighting per character
+<img src="https://i.imgur.com/fs1dzls.png" alt="alt text" width="360" height="256"> 
+
 - ***(New in v1.1)*** Real-time shadow (HgShadow) (Soft/Sharp)
 <img src="https://i.imgur.com/c6hnn07.png" alt="alt text" width="431" height="256"> 
 
