@@ -14,6 +14,9 @@ A MMD shader that is utilized in making ripped Project Sekai models look as iden
 <img src="https://i.imgur.com/RuHMgS5.png" alt="alt text">
 
 ## Features
+- ***(New in v1.3)*** Front object (always appears in front of other objects)
+<img src="https://i.imgur.com/aDR1mAt.png" alt="alt text"> 
+
 - ***(New in v1.2)*** Lighting per character
 <img src="https://i.imgur.com/fs1dzls.png" alt="alt text" width="360" height="256"> 
 
