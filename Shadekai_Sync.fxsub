@@ -6,6 +6,7 @@ bool Controller : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; >;
 
 float EdgeScale_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "VC: Edge Scale"; >;
 float RimScale_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "VC: Rim Scale"; >;
+float FrontObject_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "VC: Front Object"; >;
 float SkinArea_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Map: Skin Area"; >;
 float GlowArea_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Map: Glow Area"; >;
 float Ambient_view : CONTROLOBJECT < string name = "Shadekai_Controller.pmx"; string item = "Ambient"; >;

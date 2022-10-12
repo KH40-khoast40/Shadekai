@@ -1,13 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//	Shadekai (Project Sekai shader for MMD) v1.2
+//	Shadekai (Project Sekai shader for MMD) v1.3
 //
 //	By: KH40 (khoast40)
 //	Base shader: 舞力介入P
 //	Special thanks: Yukikami
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// パラメータ宣言
 
 #include "HgShadow_ObjHeader.fxh"
 
@@ -154,8 +153,19 @@ BufferShadow_OUTPUT Basic_VS(float4 Pos : POSITION, float3 Normal : NORMAL, floa
 }
 
 // ピクセルシェーダ
-float4 Basic_PS( BufferShadow_OUTPUT IN ) : COLOR
-{ 	
+float4 Basic_PS( BufferShadow_OUTPUT IN, uniform bool Z_Enable ) : COLOR
+{ 
+	#if Front_Object == 1
+		if(!Z_Enable)
+		{
+			if(IN.VColor.b == 0) {discard;}
+		}
+		else
+		{
+			if(IN.VColor.b == 1) {discard;}
+		}
+	#endif
+	
 	#if Self_LightDirection == 1
 		LightDirection = Self_Lighting_Dir_Toon;
 	#endif
@@ -245,6 +255,7 @@ float4 Basic_PS( BufferShadow_OUTPUT IN ) : COLOR
 		{
 			Color.rgb = lerp(Color.rgb , float3(IN.VColor.rrr) , EdgeScale_view );
 			Color.rgb = lerp(Color.rgb , float3(IN.VColor.ggg) , RimScale_view );
+			Color.rgb = lerp(Color.rgb , float3(IN.VColor.bbb) , FrontObject_view );
 			Color.rgb = lerp(Color.rgb , tex2D(SekaiMapSamp,IN.Tex).rrr , SkinArea_view );
 			Color.rgb = lerp(Color.rgb , tex2D(SekaiMapSamp,IN.Tex).ggg , GlowArea_view );
 			Color.rgb = lerp(Color.rgb , Ambient_Color*(1-Ambient_Dark) , Ambient_view );
@@ -285,33 +296,51 @@ EdgeVS_OUTPUT Edge_VS(float4 Pos : POSITION, float3 Normal : NORMAL, float2 Tex 
 float4 Edge_PS(EdgeVS_OUTPUT IN) : COLOR
 {
 	float3 EdgeColor = tex2D(ObjTexSampler,IN.Tex).rgb*0.325;
+	
 	float EdgeAlpha = tex2D(ObjTexSampler,IN.Tex).a;
+	
     return float4(EdgeColor,EdgeAlpha);
 }
-technique MainTec < string MMDPass = "object"; > {
-    pass DrawObject
-    {
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+technique Shadekai_NoShadow < string MMDPass = "object"; > {
+    pass DrawObject {
         VertexShader = compile vs_3_0 Basic_VS();
-        PixelShader  = compile ps_3_0 Basic_PS();
+        PixelShader  = compile ps_3_0 Basic_PS(true);
     }
 	pass DrawEdge {
 	   CullMode = CW;
        VertexShader = compile vs_3_0 Edge_VS();
        PixelShader  = compile ps_3_0 Edge_PS();
     }
+	#if Front_Object == 1
+		pass DrawObject_NoZ {
+			ZEnable = false;
+			VertexShader = compile vs_3_0 Basic_VS();
+			PixelShader  = compile ps_3_0 Basic_PS(false);
+		}
+	#endif
 }
 
 // オブジェクト描画用テクニック
-technique MainTecBS  < string MMDPass = "object_ss"; > {
+technique Shadekai_Shadow  < string MMDPass = "object_ss"; > {
     pass DrawObject {
         VertexShader = compile vs_3_0 Basic_VS();
-        PixelShader  = compile ps_3_0 Basic_PS();
+        PixelShader  = compile ps_3_0 Basic_PS(true);
     }
 	pass DrawEdge {
 	   CullMode = CW;
        VertexShader = compile vs_3_0 Edge_VS();
        PixelShader  = compile ps_3_0 Edge_PS();
     }
+	#if Front_Object == 1
+		pass DrawObject_NoZ {
+			ZEnable = false;
+			VertexShader = compile vs_3_0 Basic_VS();
+			PixelShader  = compile ps_3_0 Basic_PS(false);
+		}
+	#endif
 }
 
 

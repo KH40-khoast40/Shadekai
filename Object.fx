@@ -1,8 +1,8 @@
 
 //Shadekai (Project Sekai shader for MMD)
 
-#define SekaiMap_Texture "tex_bdy_MIK_00_H.png" //The texture that ends with "_H"
-#define ShadowColorMap_Texture "tex_bdy_MIK_00_S.png" //The texture that ends with "_S"
+#define SekaiMap_Texture "_H.png" //The texture that ends with "_H"
+#define ShadowColorMap_Texture "_S.png" //The texture that ends with "_S"
 
 #define Character 20
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13,13 +13,13 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define Self_LightDirection 1 //Light direction per character, set to 0 for the model to use global light instead
+#define Self_LightDirection 0 //Light direction per character, set to 0 for the model to use global light instead
 
-#define Self_Ambient 1 //The ambient color on the model. If enable, the Self_Lighting_Model must have "Ambient_R/G/B +" facials
-#define Self_Rim 1 //The color of the rim to be exact. If enable, the Self_Lighting_Model must have "Rim_R/G/B +" facials
+#define Self_Ambient 0 //The ambient color on the model. If enable, the Self_Lighting_Model must have "Ambient_R/G/B +" facials
+#define Self_Rim 0 //The color of the rim to be exact. If enable, the Self_Lighting_Model must have "Rim_R/G/B +" facials
 
 //Note that if Self_Ambient and Self_Rim are turned off, those of the model will be globally controlled by the RGB facials in Shadekai_Controller.pmx
-//Turn off the 3 things above if you just want to control all aspects of the lighting globally like the previous version of the shader
+//Turn off the 3 things above if you just want to control all aspects of the lighting globally, like a sane person
 
 //The options below are to define the controller of LightDirection, Ambient, Rim
 
@@ -40,7 +40,11 @@
 	
 #define Shadow_Sharp 1
 	//0 to choose soft shadow , 1 to choose sharp shadow
-	//For Sekai's artstyle, sharp shadow is recommended. And no, sharp not as in default MMD's busted pixelated shadow, it's Hgshadow but sharpened
+	//For Sekai's artstyle, sharp shadow is recommended. HgShadow is still required for sharp shadow
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define Front_Object 1 //Enable to make eyebrows and some other parts always appear in front of other objects, even if they're physically behind something
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,5 +53,7 @@ float Rim_Length = 0.25; //SMALLER number means LONGER rim
 float Rim_Thickness = 0.65; //SMALLER number means THICKER rim
 
 float Edge_Thickness = 0.01;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "Shadekai_Sync.fxsub"
